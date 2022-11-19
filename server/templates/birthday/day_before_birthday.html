@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body>
+    <p style="color: green;"><strong>Here is the list of upcoming Birthdays...  </strong></p>
+
+    <table style="border-collapse: collapse; width: 90%; border: 1px solid #ddd; text-align: left;">
+        <tr>
+            <th style="padding: 15px; border: 1px solid #ddd; text-align: left;">Name</th>
+            <th style="padding: 15px; border: 1px solid #ddd; text-align: left;">Date</th>
+        </tr>
+        {% for event in events %}
+            <tr>
+                <td style="padding: 15px; border: 1px solid #ddd; text-align: left;">{{event.name}}</td>
+                <td style="padding: 15px; border: 1px solid #ddd; text-align: left;">{{event.d_o_b}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
