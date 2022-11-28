@@ -15,12 +15,11 @@ permissions:
 
 jobs:
   create_env:
+    name: testing
     runs-on: ubuntu-latest
     if: ${{ always() }} && ${{ job.status }} == 'failure'
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: Get previous workflow status
       run: echo ${{ job.status }}
   
