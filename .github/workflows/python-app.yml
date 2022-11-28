@@ -26,7 +26,7 @@ jobs:
       uses: Mercymeilya/last-workflow-status@v0.3.2
       id: last_status
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKENs }}
     
     - name: Print previous workflow status
       if: ${{ always() }}
