@@ -26,7 +26,12 @@ jobs:
         echo ${GITHUB_REF##*/}
     - name: get the value
       id: step_
-      if: ${GITHUB_REF##*/} == "main"
+      if:
+        contains('
+          refs/heads/main
+          refs/heads/staging
+          refs/heads/production
+        ', github.ref)
       run: |
         echo "HIIIIIIII"
     
