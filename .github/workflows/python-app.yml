@@ -21,6 +21,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Build fi
+    -uses: mdmd
       if:
         contains('
           refs/heads/main
@@ -28,6 +29,7 @@ jobs:
 
       run: |
         echo ${{ job.status }}
+        
 
     - name: Build fixed slack message
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
