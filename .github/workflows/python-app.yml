@@ -20,9 +20,15 @@ jobs:
     steps:
     - name: Set the value
       id: step_one
+      if: ${GITHUB_REF##*/} == "master"
       run: |
         echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV
         echo ${GITHUB_REF##*/}
+    - name: get the value
+      id: step_
+      if: ${GITHUB_REF##*/} == "main"
+      run: |
+        echo "HIIIIIIII"
     
     - uses: actions/checkout@v3
     - name: Build fixed slack message
