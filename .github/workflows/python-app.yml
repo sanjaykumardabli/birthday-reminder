@@ -33,7 +33,7 @@ jobs:
         SLACK_MESSAGE: 'Style check fixed now!'
 
     - name: Build fi
-      if:
+      if: ${{ always() }} &&
         contains('
           refs/heads/main
         ', github.ref)
