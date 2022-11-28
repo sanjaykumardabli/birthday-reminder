@@ -49,5 +49,5 @@ jobs:
         contains('
           refs/heads/main
         ', github.ref)
-      run: echo "Main Branch ${{ SLACK_MESSAGE }}"
+      run: echo "slack message $SLACK_MESSAGE"
 
