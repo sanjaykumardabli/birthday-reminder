@@ -70,7 +70,7 @@ jobs:
       run: echo "slack message $SLACK_MESSAGE"
 
     - name: Send slack message to dev branch when recovered build
-      if: ${{ always() }} &&
+      if:
         contains('
           refs/heads/main
         ', github.ref) && ${{ steps.last_status.outputs.last_status }} == 'failure' && ${{ job.status }} == 'success' 
