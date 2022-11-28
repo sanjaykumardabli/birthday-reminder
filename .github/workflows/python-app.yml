@@ -3,7 +3,6 @@
 
 name: Python application
 
-
 on:
   push:
     branches: [ "main" ]
@@ -27,6 +26,14 @@ jobs:
       id: last_status
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Print previous workflow status
+      if: ${{ always() }}
+      run: echo ${{ steps.last_status.outputs.last_status }}
+
+    - name: Print current workflow status
+      if: ${{ always() }}
+      run: echo ${{ job.status }}
 
     - name: Get slack message
       if: ${{ always() }} && ${{ job.status }} == 'failure'
