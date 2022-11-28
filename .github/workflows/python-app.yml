@@ -25,7 +25,7 @@ jobs:
         python-version: "3.10"
   
     - name: Build fixed slack message
-      uses: gdcorp-action-public-forks/action-slack-notifY@V2
+      uses: gdcorp-action-public-forks/action-slack-notifY@v2
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_MESSAGE: 'Style check fixed now!'
