@@ -20,7 +20,12 @@ jobs:
     steps:
     - name: Set the value
       id: step_one
-      if: ${GITHUB_REF##*/} == "master"
+      if:
+        contains('
+          refs/heads/dev
+          refs/heads/staging
+          refs/heads/production
+        ', github.ref)
       run: |
         echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV
         echo ${GITHUB_REF##*/}
