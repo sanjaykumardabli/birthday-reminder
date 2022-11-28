@@ -27,7 +27,7 @@ jobs:
     - name: Build fixed slack message
       uses: rtCamp/action-slack-notify@v2.1.3
       env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_MESSAGE: 'Style check fixed now!'
   
     - name: Install dependencies
