@@ -21,7 +21,8 @@ jobs:
     - name: Set the value
       id: step_one
       run: |
-        echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV      
+        echo "branch_name=${GITHUB_REF##*/}" >> $GITHUB_ENV
+        echo "name ${branch_name}"
     
     - uses: actions/checkout@v3
     - name: Build fixed slack message
