@@ -36,7 +36,7 @@ jobs:
 
     - name: Get slack message if recovered
       id: slack_message
-      if: ${{ last_status }} == 'failure' && ${{ job.status }} == 'success' 
+      if: ${{ steps.last_status.outputs.last_status }} == 'failure' && ${{ job.status }} == 'success' 
       run: echo "SLACK_MESSAGE=Recovered Build" >> $GITHUB_ENV
 
     - name: Print slack message Recovered
