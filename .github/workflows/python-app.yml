@@ -47,7 +47,7 @@ jobs:
       if: ${{ always() }} &&
         contains('
           refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'success' && ${{ last_status }} == 'failure'
+        ', github.ref) && ${{ job.status }} == 'success' && ${{ steps.last_status.outputs.last_status }} == 'failure'
 
       run: |
         echo ${{ steps.last_status.outputs.last_status }}
