@@ -20,10 +20,24 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Build fi
+      uses: gdcorp-action-public-forks/action-slack-notifY@v2
+      if:
+        contains('
+          refs/heads/main
+        ', github.ref) && contains('
+          refs/heads/main
+        ', github.ref)
+
+      run: |
+        echo "HIIIIIIII"
+
     - name: Build fixed slack message
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
       if:
         contains('
+          refs/heads/main
+        ', github.ref) && contains('
           refs/heads/main
         ', github.ref)
 
