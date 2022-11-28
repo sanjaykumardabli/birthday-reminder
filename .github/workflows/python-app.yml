@@ -17,9 +17,10 @@ jobs:
   create_env:
     name: testing
     runs-on: ubuntu-latest
-    if: ${{ always() }} && ${{ job.status }} == 'failure'
+    if: ${{ always() }} && ${{ steps.last_status.outputs.last_status }} == 'success'
 
     steps:
+    - uses: actions/checkout@v3
     - name: Get previous workflow status
       run: echo ${{ job.status }}
   
