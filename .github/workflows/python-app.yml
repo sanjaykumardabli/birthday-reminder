@@ -25,6 +25,7 @@ jobs:
       env:
         SLACK_WEBHOOK: "sdf"
         SLACK_MESSAGE: Build Recovered
+      continue-on-error: true
 #
     - name: Get branch name
       shell: bash
@@ -56,7 +57,8 @@ jobs:
       run: |
         last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
                                     --header 'content-type: application/json' \
-        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_ID }}/runs?per_page=2&status=completed&branch=${{ env.BRANCH_NAME }}")
+        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_ID }}/runs?per_page=2&status=completed&branch=${{ env.BRANCH_NAME }}" \
+        | jq -r .workflow_runs[-1].conclusion)
         echo "::set-output name=last_status::$last_status"
         echo "Status of the previous build: $last_status"
     
