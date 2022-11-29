@@ -8,6 +8,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 permissions:
   contents: read
 
@@ -17,82 +18,22 @@ jobs:
     runs-on: ubuntu-latest
     #environment: dev-private
     steps:
-#
-    - name: Get branch name
-      shell: bash
-      run: |
-        if [[ ${GITHUB_EVENT_NAME} == "pull_request" ]]
-        then
-           echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
-           echo "Branch name: ${GITHUB_HEAD_REF}"
-        else
-           echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
-           echo "Branch name: ${GITHUB_REF#refs/heads/}"        
-        fi
-
-    - name: Run id
-      run: echo ${{ github.run_ }}
-
-    - name: URL
-      run: echo ${{ github.api_url }}
+    - name: Get latest workflow run status
+      uses: actions/github-script@v3
+      id: latest-workflow-status
+      with:
+        script: |
+          const runs = await github.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'python-app.yml',
+            per_page: 2
+          })
+          return runs.data.workflow_runs[1].conclusion
+        result-encoding: string
     
-    - name: URL1
-      run: echo ${{ github.repository }}
-
-    - name: URL2
-      run: echo $GITHUB_RUN_IDS
+    - name: Send mail if previous workflow run failed and the current succeeded
+      run: echo ${{ success() }}
+    - name: test
+      run: ${{ steps.latest-workflow-status.outputs.result }}
     
-    - name: Get workflow id
-      shell: bash
-      run: |
-        WORKFLOW_ID=$(curl --header 'authorization: Bearer ${{ github.token }}' \
-                           --header 'content-type: application/json' \
-        ${{ github.api_url }}/repos/${{ github.repostory }}/actions/runs/${{ github.run_id }} | jq -r .workflow_id)
-        echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
-        echo "Workflow id: ${WORKFLOW_I}"
-    
-    - name: Get previous build status
-      shell: bash
-      id: last_status
-      run: |
-        last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
-                                    --header 'content-type: application/json' \
-        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_ID }}/runs?per_page=2&status=completed&branch=${{ env.BRANCH_NAME }}" \
-        | jq -r .workflow_runs[0].conclusion)
-        echo "::set-output name=last_status::$last_status"
-        echo "Status of the previous build: $last_status"
-
-    # - name: Get GITHUB_RUN_ID
-    #   shell: bash
-    #   run: |
-    #     last_status=$(curl --header 'authorization: Bearer ${{ github.token }}' \
-    #                        --header 'content-type: application/json' \
-    #     ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/$GITHUB_RUN_IDS/jobs | jq -r .workflow_id)
-    #     echo "::set-output name=last_status::$last_status"
-    #     echo "Status of the previous build: $last_status"
-    
-    - name: print last build status
-      run: echo ${{ steps.last_status.outputs.last_status }}
-
-    - name: Print slack message failure
-      run: echo ${{ job.status == 'failure' }}
-
-    - name: Send slack message for Failure Job
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if: ${{ job.status == 'failure' }}
-      id: slack_notification_failure
-
-      env:
-        SLACK_WEBHOOK: "df"
-        SLACK_MESSAGE: Build Failed
-      continue-on-error: true
-#
-    - name: Send slack message if on rebuild
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if: ${{ (steps.slack_notification_failure.outcome == 'skipped')  && (steps.last_status.outputs.last_status == 'failure') && (job.status == 'success' ) }}
-      id: slack_notification_rebuild
-
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
