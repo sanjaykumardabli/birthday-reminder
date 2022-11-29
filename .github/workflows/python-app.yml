@@ -41,10 +41,7 @@ jobs:
     - name: Send slack message if on failure
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
       id: slack_notification
-      if:
-        contains('
-          refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'failure'
+      if: ${{ job.status == 'failure' }}
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
@@ -59,8 +56,8 @@ jobs:
       
     - name: Send slack message if on rebuild
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification_rebuild
       if: ${{ steps.old_status.outputs.old_status == 'failure' }} && ${{ job.status == 'success' }}
+      id: slack_notification_rebuild
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
