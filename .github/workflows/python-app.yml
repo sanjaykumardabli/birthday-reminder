@@ -52,12 +52,6 @@ jobs:
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
 
-    - name: Set GITHUB_RUN_ID
-      shell: bash
-      run: |
-        echo "GITHUB_RUN_IDS=$GITHUB_RUN_ID" >> $GITHUB_ENV
-        echo "Workflow id: ${WORKFLOW_ID}"
-
     - name: Get GITHUB_RUN_ID
       shell: bash
       run: |
@@ -92,3 +86,9 @@ jobs:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
       continue-on-error: true
+
+    - name: Set GITHUB_RUN_ID
+      shell: bash
+      run: |
+        echo "GITHUB_RUN_IDS=$GITHUB_RUN_ID" >> $GITHUB_ENV
+        echo "Workflow id: ${WORKFLOW_ID}"
