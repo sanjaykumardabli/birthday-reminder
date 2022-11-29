@@ -19,16 +19,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Send slack message
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if:
-        contains('
-          refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'success'
-
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
 
     - name: Get previous workflow status
       if: ${{ always() }}
@@ -46,7 +36,7 @@ jobs:
       run: echo ${{ job.status }}
 
     - name: Get slack message
-      if: ${{ job.status }} == 'failure'
+      if: ${{ always() }} && ${{ job.status }} == 'failure'
       id: slack_message1
       run: echo "SLACK_MESSAGE=Build failed" >> $GITHUB_ENV
 
@@ -70,10 +60,49 @@ jobs:
       run: echo "slack message $SLACK_MESSAGE"
 
     - name: Send slack message to dev branch when recovered build
-      if:
+      if: ${{ always() }} &&
         contains('
           refs/heads/main
         ', github.ref) && ${{ steps.last_status.outputs.last_status }} == 'failure' && ${{ job.status }} == 'success' 
       run: echo "slack message $SLACK_MESSAGE"
-        
-  
+
+    - name: Send slack message
+      uses: gdcorp-action-public-forks/action-slack-notifY@v2
+      if:
+        contains('
+          refs/heads/main
+        ', github.ref) && ${{ job.status }} == 'success'
+
+      env:
+        SLACK_WEBHOOK: https://hooks.slack.com/services/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
+        SLACK_MESSAGE: $SLACK_MESSAGE
+
+  build1:
+
+    runs-on: ubuntu-latest
+    outputs:
+      deploy-status: ${{ steps.check.outputs.triggered }}
+    steps:
+      - uses: khan/pull-request-comment-trigger@master
+        id: check
+        - name: Send slack message
+          uses: gdcorp-action-public-forks/action-slack-notifY@v2
+          if:
+            contains('
+              refs/heads/main
+            ', github.ref) && ${{ job.status }} == 'success'
+
+          env:
+            SLACK_WEBHOOK: https://hooks.slack.com/services/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
+            SLACK_MESSAGE: $SLACK_MESSAGE
+
+  after-deploy:
+    runs-on: ubuntu-latest
+    needs: [build1]
+    if: needs.deploy.outputs.deploy-status == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Print current workflow status
+        run: echo ${{ job.status }}
