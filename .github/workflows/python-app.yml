@@ -11,7 +11,7 @@ on:
 
 permissions:
   contents: read
-    
+
 jobs:
   build:
     name: Slack Notification
@@ -26,8 +26,15 @@ jobs:
 
     - name: Check status success
       run: echo ${{ steps.last_status.outputs.last_status }}
+    
+    - name: Check status success
+      if: ${{ failure() }}
+      run: echo "failed"
 
     - name: Build fixed slack message
       if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
       run: echo "Success"
+
+
+    
   
