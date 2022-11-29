@@ -23,9 +23,7 @@ jobs:
       id: last_status
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Check status success
-      run: echo ${{ success() }}
+
     - name: Check status success
       run: echo ${{ steps.last_status.outputs.last_status }}
 
