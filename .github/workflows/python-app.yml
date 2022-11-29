@@ -1,58 +1,49 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+  # This workflow will install Python dependencies, run tests and lint with a single version of Python
+  # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+  name: Python application
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  on:
+    push:
+      branches: [ "main" ]
+    pull_request:
+      branches: [ "main" ]
 
-permissions:
-  contents: read
+  permissions:
+    contents: read
 
-jobs:
-  build:
-    name: Slack Notification
-    runs-on: ubuntu-latest
-    #environment: dev-private
-    steps:
-    - name: Get previous workflow status
-      uses: Mercymeilya/last-workflow-status@v0.3.2
-      id: last_status
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+  jobs:
+    build:
+      name: Slack Notification
+      runs-on: ubuntu-latest
+      #environment: dev-private
+      steps:
+      - name: Get previous workflow status
+        uses: Mercymeilya/last-workflow-status@v0.3.2
+        id: last_status
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Check status success
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification_rebuild1
+      - name: Build fixed slack message
+        if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
+        uses: gdcorp-action-public-forks/action-slack-notifY@v2
+        id: slack_notification_rebuild
 
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
+        env:
+          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+          SLACK_MESSAGE: $SLACK_MESSAGE
+        continue-on-error: true
 
-    - name: Build fixed slack message
-      if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification_rebuild
+      - name: check last but one status
+        if: ${{ always() }}
+        run: echo ${{ job.status }}
 
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
+      - name: Build failure slack message
+        if: ${{ always() && failure() && steps.slack_notification_rebuild.outcome == 'skipped' }}
+        uses: gdcorp-action-public-forks/action-slack-notifY@v2
+        id: slack_notification
 
-    - name: check last but one status
-      if: ${{ always() }}
-      run: echo ${{ job.status }}
-
-    - name: Build failure slack message
-      if: ${{ always() && failure() && steps.slack_notification_rebuild.outcome == 'skipped' }}
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification
-
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
+        env:
+          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+          SLACK_MESSAGE: $SLACK_MESSAGE
+        continue-on-error: true
