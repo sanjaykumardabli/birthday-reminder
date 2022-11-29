@@ -76,7 +76,7 @@ jobs:
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
-
+      continue-on-error: true
 
     - name: Send slack message
       id: check
