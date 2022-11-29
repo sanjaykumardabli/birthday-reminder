@@ -26,7 +26,7 @@ jobs:
 
     - name: Check status success
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification_rebuild
+      id: slack_notification_rebuild1
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
@@ -36,7 +36,7 @@ jobs:
     - name: Build fixed slack message
       if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification_rebuildq
+      id: slack_notification_rebuild
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
@@ -48,7 +48,7 @@ jobs:
       run: echo ${{ job.status }}
 
     - name: Build failure slack message
-      if: ${{ failure() && steps.slack_notification_rebuild.outcome == 'skipped' }}
+      if: ${{ always() && failure() && steps.slack_notification_rebuild.outcome == 'skipped' }}
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
       id: slack_notification
 
