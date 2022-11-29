@@ -69,3 +69,6 @@ jobs:
 
     - name: Condition
       run: echo ${{ steps.slack_notification_rebuild.outcome == 'skipped' }}
+
+    - name: Condition 2
+      run: echo ${{ (steps.slack_notification.outcome == 'skipped')  && (steps.old_status.outputs.old_status == 'failure') && (job.status == 'success' ) }}
