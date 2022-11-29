@@ -77,28 +77,27 @@ jobs:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
 
-  build1:
+  deploy:
 
     runs-on: ubuntu-latest
     outputs:
       deploy-status: ${{ steps.check.outputs.triggered }}
     steps:
-      - uses: khan/pull-request-comment-trigger@master
+      - name: Send slack message
         id: check
-        - name: Send slack message
-          uses: gdcorp-action-public-forks/action-slack-notifY@v2
-          if:
-            contains('
-              refs/heads/main
-            ', github.ref) && ${{ job.status }} == 'success'
+        uses: gdcorp-action-public-forks/action-slack-notifY@v2
+        if:
+          contains('
+            refs/heads/main
+          ', github.ref) && ${{ job.status }} == 'success'
 
-          env:
-            SLACK_WEBHOOK: https://hooks.slack.com/services/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
-            SLACK_MESSAGE: $SLACK_MESSAGE
+        env:
+          SLACK_WEBHOOK: https://hooks.slack.com/services/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
+          SLACK_MESSAGE: $SLACK_MESSAGE
 
   after-deploy:
     runs-on: ubuntu-latest
-    needs: [build1]
+    needs: [deploy]
     if: needs.deploy.outputs.deploy-status == 'true'
     steps:
       - name: Checkout
