@@ -93,7 +93,7 @@ jobs:
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
+      # continue-on-error: true
 
     - name: check failure status
       run: echo ${{ steps.slack_notification_rebuild.outcome }}
@@ -111,5 +111,5 @@ jobs:
       run: echo ${{ (steps.old_status.outputs.old_status== 'failure') }}
     
     - name: Condition 5
-      run: echo ${{ (job.statu == 'success' ) }}
+      run: echo ${{ (job.status == 'success' ) }}
  
