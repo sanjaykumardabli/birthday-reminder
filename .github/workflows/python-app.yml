@@ -72,3 +72,12 @@ jobs:
 
     - name: Condition 2
       run: echo ${{ (steps.slack_notification.outcome == 'skipped')  && (steps.old_status.outputs.old_status == 'failure') && (job.status == 'success' ) }}
+
+    - name: Condition 3
+      run: echo ${{ (steps.slack_notification.outcome == 'skipped') }}
+    
+    - name: Condition 4
+      run: echo ${{ (steps.old_status.outputs.old_status == 'failure') }}
+    
+    - name: Condition 5
+      run: echo ${{ (job.status == 'success' ) }}
