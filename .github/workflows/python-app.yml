@@ -25,6 +25,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Build fixed slack message
-      if: ${{ success() && steps.last_status.outputs.last_status == 'failure' }}
+      if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
       run: echo "Success"
     
