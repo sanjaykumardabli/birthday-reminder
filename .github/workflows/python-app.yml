@@ -92,7 +92,7 @@ jobs:
 
   after-deploy:
     runs-on: ubuntu-latest
-    if: ${{ job.status }} == 'failure' 
+    if: ${{ job.status == 'failure' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
