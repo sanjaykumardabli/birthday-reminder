@@ -1,25 +1,28 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
-
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-
+  workflow_call:
+   inputs:
+      ENVIRONMENT:
+        description: AWS environment where it sends a Slack notification.
+        type: string
+name: Slack Notification
 jobs:
-  build:
-
+  slackNotification:
+    name: Slack Notification
     runs-on: ubuntu-latest
-
+    #environment: dev-private
     steps:
-    - uses: actions/checkout@v3
+    - name: Send slack message for Recovered Job
+      uses: gdcorp-action-public-forks/action-slack-notifY@v2
+      if:
+        ${{ contains('
+          refs/heads/feature/FINTECH-1623
+        ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
+      env:
+        SLACK_WEBHOOK: "dfg"
+        SLACK_MESSAGE: Build Recovered
+      continue-on-error: true
+#
     - name: Get branch name
       shell: bash
       run: |
@@ -44,67 +47,42 @@ jobs:
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
 
-    - name: Get previous workflow status
-      uses: Mercymeilya/last-workflow-status@v0.3.2
+    - name: Get previous build status
+      shell: bash
       id: last_status
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
+                                    --header 'content-type: application/json' \
+        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_ID }}/runs?per_page=1&status=completed&branch=${{ env.BRANCH_NAME }}" \
+        | jq -r .workflow_runs[0].conclusion)
+        echo "::set-output name=last_status::$last_status"
+        echo "Status of the previous build: $last_status"
     
     - name: print last build status
-      run: echo ${{ steps.last_status.outputs.last_status.value }}
-    
-    - name: set previous status
-      if: ${{ always() }}
-      id: old_status
-      run: echo "old_status=failure" >> $GITHUB_ENV
-
-    - name: print old_status
       run: echo ${{ steps.last_status.outputs.last_status }}
-    
-    - name: print current status
-      run: echo ${{ job.status }}
-
-    - name: Send slack message if on failure
+#
+    - name: Send slack message for Recovered Job
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      id: slack_notification
-      if: ${{ job.status == 'failure' }}
+      if:
+        ${{ contains('
+          refs/heads/feature/FINTECH-1623
+        ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
       env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
-    
-    - name: check failure status
-      run: echo ${{ steps.slack_notification.outcome }}
+        SLACK_WEBHOOK: "dfg"
+        SLACK_MESSAGE: Build Recovered
+#
+    - name: Print slack message failure
+      if: ${{ always() }}
+      run: echo ${{ job.status == 'failure' }}
 
-    - name: print old_status again
-      run: echo ${{ job.status }}
-      
-    - name: Send slack message if on rebuild
+    - name: Send slack message for Failure Job
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if: ${{ (steps.slack_notification.outcome == 'skipped')  && (steps.old_status.outputs.old_status == 'failure') && (job.status == 'success' ) }}
-      id: slack_notification_rebuild
+      if: ${{ always() }} &&
+        ${{ job.status == 'failure' }}
 
       env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-      continue-on-error: true
-
-    - name: check failure status
-      run: echo ${{ steps.slack_notification_rebuild.outcome }}
-
-    - name: Condition
-      run: echo ${{ steps.slack_notification_rebuild.outcome == 'skipped' }}
-
-    - name: Condition 2
-      run: echo ${{ (steps.slack_notification.outcome == 'skipped')  && (steps.old_status.outputs.old_status == 'failure') && (job.status == 'success' ) }}
-
-    - name: Condition 3
-      run: echo ${{ (steps.slack_notification.outcome == 'skipped') }}
-    
-    - name: Condition 4
-      run: echo ${{ (steps.old_status.outputs.old_status== 'failure') }}
-    
-    - name: Condition 5
-      run: echo ${{ (job.status == 'success' ) }}
- 
+        SLACK_WEBHOOK: "werfg"
+        SLACK_MESSAGE: Build Failed
+    - name: Print slack message failure
+      run: echo ${{ job.status }}
