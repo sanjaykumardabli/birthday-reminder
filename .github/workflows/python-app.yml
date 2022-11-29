@@ -40,6 +40,9 @@ jobs:
     - name: URL1
       run: echo ${{ github.repository }}
     
+    - name: URL2
+      run: echo $GITHUB_RUN_ID
+    
     - name: Get workflow id
       shell: bash
       run: |
