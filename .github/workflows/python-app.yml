@@ -41,7 +41,7 @@ jobs:
       run: echo ${{ github.repository }}
 
     - name: URL2
-      run: echo $GITHUB_RUN_NUMBER
+      run: echo $GITHUB_RUN_IDS
     
     - name: Get workflow id
       shell: bash
@@ -51,15 +51,26 @@ jobs:
         ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} | jq -r .workflow_id)
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
-
-    - name: Get GITHUB_RUN_ID
+    
+    - name: Get previous build status
       shell: bash
+      id: last_status
       run: |
-        last_status=$(curl --header 'authorization: Bearer ${{ github.token }}' \
-                           --header 'content-type: application/json' \
-        ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/$GITHUB_RUN_IDS/jobs | jq -r .workflow_id)
+        last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
+                                    --header 'content-type: application/json' \
+        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_ID }}/runs?per_page=2&status=completed&branch=${{ env.BRANCH_NAME }}" \
+        | jq -r .workflow_runs[0].conclusion)
         echo "::set-output name=last_status::$last_status"
         echo "Status of the previous build: $last_status"
+
+    # - name: Get GITHUB_RUN_ID
+    #   shell: bash
+    #   run: |
+    #     last_status=$(curl --header 'authorization: Bearer ${{ github.token }}' \
+    #                        --header 'content-type: application/json' \
+    #     ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/$GITHUB_RUN_IDS/jobs | jq -r .workflow_id)
+    #     echo "::set-output name=last_status::$last_status"
+    #     echo "Status of the previous build: $last_status"
     
     - name: print last build status
       run: echo ${{ steps.last_status.outputs.last_status }}
@@ -86,9 +97,3 @@ jobs:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
       continue-on-error: true
-
-    - name: Set GITHUB_RUN_ID
-      shell: bash
-      run: |
-        echo "GITHUB_RUN_IDS=$GITHUB_RUN_ID" >> $GITHUB_ENV
-        echo "Workflow id: ${WORKFLOW_ID}"
