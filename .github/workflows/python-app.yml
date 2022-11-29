@@ -25,7 +25,7 @@ jobs:
         ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
       env:
-        SLACK_WEBHOOK: *
+        SLACK_WEBHOOK: "sdf"
         SLACK_MESSAGE: Build Recovered
       continue-on-error: true
 #
@@ -75,7 +75,7 @@ jobs:
         ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
       env:
-        SLACK_WEBHOOK: *
+        SLACK_WEBHOOK: "efg"
         SLACK_MESSAGE: Build Recovered
 #
     - name: Print slack message failure
@@ -88,7 +88,7 @@ jobs:
         ${{ job.status == 'failure' }}
 
       env:
-        SLACK_WEBHOOK: *
+        SLACK_WEBHOOK: "df"
         SLACK_MESSAGE: Build Failed
     - name: Print slack message failure
       run: echo ${{ job.status }}
