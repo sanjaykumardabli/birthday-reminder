@@ -5,6 +5,7 @@ on:
         description: AWS environment where it sends a Slack notification.
         type: string
 name: Slack Notification
+
 jobs:
   slackNotification:
     name: Slack Notification
