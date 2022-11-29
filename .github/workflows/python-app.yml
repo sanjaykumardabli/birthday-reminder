@@ -32,7 +32,7 @@ jobs:
         fi
 
     - name: Run id
-      run: echo ${{ github.run_id }}
+      run: echo ${{ github.run_ }}
 
     - name: URL
       run: echo ${{ github.api_url }}
