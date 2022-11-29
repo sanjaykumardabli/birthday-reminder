@@ -25,6 +25,7 @@ jobs:
       env:
         SLACK_WEBHOOK: "sdf"
         SLACK_MESSAGE: Build Recovered
+      continue-on-error: true
 #
     - name: Get branch name
       shell: bash
