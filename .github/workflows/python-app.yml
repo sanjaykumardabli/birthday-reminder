@@ -1,11 +1,16 @@
-on:
-  workflow_call:
-   inputs:
-      ENVIRONMENT:
-        description: AWS environment where it sends a Slack notification.
-        type: string
-name: Slack Notification
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
 jobs:
   slackNotification:
     name: Slack Notification
@@ -20,7 +25,7 @@ jobs:
         ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
       env:
-        SLACK_WEBHOOK: "dfg"
+        SLACK_WEBHOOK: *
         SLACK_MESSAGE: Build Recovered
       continue-on-error: true
 #
@@ -70,7 +75,7 @@ jobs:
         ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
       env:
-        SLACK_WEBHOOK: "dfg"
+        SLACK_WEBHOOK: *
         SLACK_MESSAGE: Build Recovered
 #
     - name: Print slack message failure
@@ -83,7 +88,7 @@ jobs:
         ${{ job.status == 'failure' }}
 
       env:
-        SLACK_WEBHOOK: "werfg"
+        SLACK_WEBHOOK: *
         SLACK_MESSAGE: Build Failed
     - name: Print slack message failure
       run: echo ${{ job.status }}
