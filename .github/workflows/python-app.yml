@@ -9,7 +9,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-
 permissions:
   contents: read
 
@@ -112,5 +111,5 @@ jobs:
       run: echo ${{ (steps.old_status.outputs.old_status== 'failure') }}
     
     - name: Condition 5
-      run: echo ${{ (job.status == 'success' ) }}
+      run: echo ${{ (job.statu == 'success' ) }}
  
