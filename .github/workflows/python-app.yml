@@ -30,7 +30,7 @@ jobs:
     - name: set previous status
       if: ${{ always() }}
       id: old_status
-      run: echo "old_status=success" >> $GITHUB_ENV
+      run: echo "old_status=failure" >> $GITHUB_ENV
 
     - name: print old_status
       run: echo ${{ steps.old_status.outputs.old_status }}
