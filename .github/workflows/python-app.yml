@@ -56,7 +56,7 @@ jobs:
       
     - name: Send slack message if on rebuild
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if: ${{ steps.slack_notification_rebuild.outcome == 'skipped' }} && ${{ steps.old_status.outputs.old_status == 'failure' }} && ${{ job.status == 'success' }}
+      if: ${{ steps.slack_notification.outcome == 'skipped' }} 
       id: slack_notification_rebuild
 
       env:
