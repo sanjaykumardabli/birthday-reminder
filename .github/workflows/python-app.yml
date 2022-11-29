@@ -66,29 +66,26 @@ jobs:
     
     - name: print last build status
       run: echo ${{ steps.last_status.outputs.last_status }}
-#
-    - name: Send slack message for Recovered Job
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if:
-        ${{ contains('
-          refs/heads/feature/FINTECH-1623
-        ', github.ref) }} && ${{ job.status == 'success' }} && $last_status == 'failure'
 
-      env:
-        SLACK_WEBHOOK: "efg"
-        SLACK_MESSAGE: Build Recovered
-#
     - name: Print slack message failure
-      if: ${{ always() }}
       run: echo ${{ job.status == 'failure' }}
 
     - name: Send slack message for Failure Job
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if: ${{ always() }} &&
-        ${{ job.status == 'failure' }}
+      if: ${{ job.status == 'failure' }}
+      id: slack_notification_failure
 
       env:
         SLACK_WEBHOOK: "df"
         SLACK_MESSAGE: Build Failed
-    - name: Print slack message failure
-      run: echo ${{ job.status }}
+      continue-on-error: true
+#
+    - name: Send slack message if on rebuild
+      uses: gdcorp-action-public-forks/action-slack-notifY@v2
+      if: ${{ (steps.slack_notification_failure.outcome == 'skipped')  && (steps.last_status.outputs.last_status == 'failure') && (job.status == 'success' ) }}
+      id: slack_notification_rebuild
+
+      env:
+        SLACK_WEBHOOK: https://hooks.slack.com/services/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
+        SLACK_MESSAGE: $SLACK_MESSAGE
+      continue-on-error: true
