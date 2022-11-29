@@ -32,16 +32,16 @@ jobs:
         fi
 
     - name: Run id
-      run: echo ${{ github.run_i }}
+      run: echo ${{ github.run_id }}
 
     - name: URL
       run: echo ${{ github.api_url }}
     
     - name: URL1
       run: echo ${{ github.repository }}
-    
+
     - name: URL2
-      run: echo $GITHUB_RUN_ID
+      run: echo ${{ GITHUB_RUN_ID }}
     
     - name: Get workflow id
       shell: bash
@@ -52,19 +52,23 @@ jobs:
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
 
-    - name: Get previous build status
+    - name: Set GITHUB_RUN_ID
       shell: bash
-      id: last_status
       run: |
-        last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
-                                    --header 'content-type: application/json' \
-        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/runs?per_page=2&status=completed&branch=${{ env.BRANCH_NAME }}" \
-        | jq -r .workflow_runs[0].conclusion)
+        echo "GITHUB_RUN_IDS=$GITHUB_RUN_ID" >> $GITHUB_ENV
+        echo "Workflow id: ${WORKFLOW_ID}"
+
+    - name: Get GITHUB_RUN_ID
+      shell: bash
+      run: |
+        last_status=$(curl --header 'authorization: Bearer ${{ github.token }}' \
+                           --header 'content-type: application/json' \
+        ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/${{ GITHUB_RUN_IDS }}/jobs | jq -r .workflow_id)
         echo "::set-output name=last_status::$last_status"
         echo "Status of the previous build: $last_status"
     
     - name: print last build status
-      run: echo ${{ steps.last_status.outputs.last_stat }}
+      run: echo ${{ steps.last_status.outputs.last_status }}
 
     - name: Print slack message failure
       run: echo ${{ job.status == 'failure' }}
