@@ -25,11 +25,11 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Check status success
-        run: echo ${{ success() }}
+      run: echo ${{ success() }}
     - name: Check status success
-        run: echo ${{ succes() }}
+      run: echo ${{ steps.last_status.outputs.last_status }}
 
     - name: Build fixed slack message
-        if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
-        run: echo "Success"
-    
+      if: ${{ success() && (steps.last_status.outputs.last_status == 'startup_failure' || steps.last_status.outputs.last_status == 'failure') }}
+      run: echo "Success"
+  
