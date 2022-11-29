@@ -20,12 +20,19 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Get previous workflow status
-      if: ${{ always() }}
-      uses: Mercymeilya/last-workflow-status@v0.3.2
+    - name: Get previous build status
+      shell: bash
       id: last_status
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        last_status=$(curl --silent --header 'authorization: Bearer ${{ inputs.github_token }}' \
+                                    --header 'content-type: application/json' \
+        "${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/${{ env.WORKFLOW_ID }}/runs?per_page=1&status=completed&branch=${{ env.BRANCH_NAME }}" \
+        | jq -r .workflow_runs[0].conclusion)
+        echo "::set-output name=last_status::$last_status"
+        echo "Status of the previous build: $last_status"
+    
+    - name: print last build status
+      run: echo ${{ steps.last_status.outputs.last_status }}
     
     - name: set previous status
       if: ${{ always() }}
@@ -77,7 +84,7 @@ jobs:
       run: echo ${{ (steps.slack_notification.outcome == 'skipped') }}
     
     - name: Condition 4
-      run: echo ${{ (steps.last_status.outputs.last_status == 'failure') }}
+      run: echo ${{ (steps.old_status.outputs.old_status== 'failure') }}
     
     - name: Condition 5
       run: echo ${{ (job.status == 'success' ) }}
