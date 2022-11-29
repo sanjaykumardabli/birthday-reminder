@@ -64,7 +64,7 @@ jobs:
 
     - name: Get previous build status
       shell: bash
-      id: last_status
+      id: last_status1
       run: |
         last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
                                     --header 'content-type: application/json' \
@@ -75,7 +75,7 @@ jobs:
     
     - name: Get previous build status
       shell: bash
-      id: last_status
+      id: last_status2
       run: |
         last_status=$(curl --silent --header 'authorization: Bearer ${{ github.token }}' \
                                     --header 'content-type: application/json' \
