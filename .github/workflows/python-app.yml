@@ -31,13 +31,16 @@ jobs:
            echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
            echo "Branch name: ${GITHUB_REF#refs/heads/}"        
         fi
+
+    - name: Run id
+      run: echo ${{ github.run_id }}
     
     - name: Get workflow id
       shell: bash
       run: |
         WORKFLOW_ID=$(curl --header 'authorization: Bearer ${{ github.token }}' \
                            --header 'content-type: application/json' \
-        ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs)[2]
+        ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/${{ github.run_id }} | jq -r .workflow_id)
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
 
