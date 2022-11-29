@@ -81,6 +81,7 @@ jobs:
     - name: Send slack message
       id: check
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
+      continue-on-error: true
       if:
         contains('
           refs/heads/main
@@ -89,4 +90,17 @@ jobs:
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
-  
+
+    - name: Send slack message 1
+      id: check
+      uses: gdcorp-action-public-forks/action-slack-notifY@v2
+      continue-on-error: true
+      if:
+        contains('
+          refs/heads/main
+        ', github.ref) && ${{ job.status }} == 'success'
+
+      env:
+        SLACK_WEBHOOK: https://hooks.slack.com/services/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
+        SLACK_MESSAGE: $SLACK_MESSAGE
+
