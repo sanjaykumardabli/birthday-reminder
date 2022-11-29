@@ -37,7 +37,7 @@ jobs:
       run: |
         WORKFLOW_ID=$(curl --header 'authorization: Bearer ${{ github.token }}' \
                            --header 'content-type: application/json' \
-        ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs)
+        ${{ github.api_url }}/repos/${{ github.repository }}/actions/runs)[2]
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
 
