@@ -51,6 +51,7 @@ jobs:
         echo "WORKFLOW_ID=$WORKFLOW_ID" >> $GITHUB_ENV
         echo "Workflow id: ${WORKFLOW_ID}"
 
+
     - name: Get previous build status
       shell: bash
       id: last_status
