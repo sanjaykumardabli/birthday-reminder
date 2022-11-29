@@ -27,91 +27,48 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Print previous workflow status
+    - name: set previous status
       if: ${{ always() }}
-      run: echo ${{ steps.last_status.outputs.last_status }}
+      id: old_status
+      run: echo "old_status=true" >> $GITHUB_ENV
 
-    - name: Print current workflow status
-      if: ${{ always() }}
+    - name: print old_status
+      run: echo ${{ steps.old_status.outputs.old_status }}
+    
+    - name: print old_status
       run: echo ${{ job.status }}
 
-    - name: Get slack message
-      if: ${{ always() }} && ${{ job.status }} == 'failure'
-      id: slack_message1
-      run: echo "SLACK_MESSAGE=Build failed" >> $GITHUB_ENV
-
-    - name: Print slack message
-      if: ${{ always() }}
-      run: echo $SLACK_MESSAGE
-
-    - name: Get slack message if recovered
-      id: slack_message
-      if: ${{ always() }} && ${{ steps.last_status.outputs.last_status }} == 'failure' && ${{ job.status }} == 'success' 
-      run: echo "SLACK_MESSAGE=Recovered Build" >> $GITHUB_ENV
-
-    - name: Print slack message Recovered
-      run: echo $SLACK_MESSAGE
-
-    - name: Send slack message to dev branch when build failed
-      if: ${{ always() }} &&
-        contains('
-          refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'failure'
-      run: echo "slack message $SLACK_MESSAGE"
-
-    - name: Send slack message to dev branch when recovered build
-      if: ${{ always() }} &&
-        contains('
-          refs/heads/main
-        ', github.ref) && ${{ steps.last_status.outputs.last_status }} == 'failure' && ${{ job.status }} == 'success' 
-      run: echo "slack message $SLACK_MESSAGE"
-
-    - name: Send slack message
+    - name: Send slack message if on failure
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
       id: slack_notification
       if:
         contains('
           refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'success'
+        ', github.ref) && ${{ job.status }} == 'failure'
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
       continue-on-error: true
-
-    - name: check last status
-      if: ${{ steps.slack_notification.outcome == 'success' }}
-      run: echo ${{ steps.slack_notification.outcome }}
-      
     
-    - name: Send slack message 2
-      run: echo ${{ job.status }}
-      continue-on-error: true
+    - name: check failure status
+      run: echo ${{ steps.slack_notification.outcome }}
 
-    - name: Send slack message
-      id: check
+    - name: print old_status again
+      run: echo ${{ job.status }}
+      
+    - name: Send slack message if on rebuild
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      continue-on-error: true
+      id: slack_notification_rebuild
       if:
         contains('
           refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'success'
+        ', github.ref) && ${{ job.status == 'success' }} && ${{ steps.old_status.outputs.old_status == 'failure' }}
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
-    
-    - name: Send slack message 2234
-      run: echo ${{ job.status }}
+      continue-on-error: true
 
-    - name: Send slack message 1
-      uses: gdcorp-action-public-forks/action-slack-notifY@v2
-      if:
-        ${{ contains('
-          refs/heads/main
-        ', github.ref) }} && ${{ job.status  == 'failure' }}
-
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_MESSAGE: $SLACK_MESSAGE
-
+    - name: check failure status
+      run: echo ${{ steps.slack_notification_rebuild.outcome }}
