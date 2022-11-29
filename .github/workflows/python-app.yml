@@ -18,22 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     #environment: dev-private
     steps:
-    - name: Get latest workflow run status
-      uses: actions/github-script@v3
-      id: latest-workflow-status
+    - name: Get previous workflow status
+      uses: Mercymeilya/last-workflow-status@v0.3.2
+      id: last_status
       with:
-        script: |
-          const runs = await github.actions.listWorkflowRuns({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'python-app.yml',
-            per_page: 2
-          })
-          return runs.data.workflow_runs[1].conclusion
-        result-encoding: string
+        github_token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Send mail if previous workflow run failed and the current succeeded
-      run: echo ${{ success() }}
-    - name: test
-      run: ${{ steps.latest-workflow-status.outputs.result }}
+    - name: Build fixed slack message
+      if: ${{ success() && steps.last_status.outputs.last_status == 'failure' }}
+      run: echo "Success"
     
