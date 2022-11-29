@@ -32,7 +32,7 @@ jobs:
         fi
 
     - name: Run id
-      run: echo ${{ github.run_id }}
+      run: echo ${{ github.run_i }}
 
     - name: URL
       run: echo ${{ github.api_url }}
@@ -64,7 +64,7 @@ jobs:
         echo "Status of the previous build: $last_status"
     
     - name: print last build status
-      run: echo ${{ steps.last_status.outputs.last_status }}
+      run: echo ${{ steps.last_status.outputs.last_stat }}
 
     - name: Print slack message failure
       run: echo ${{ job.status == 'failure' }}
