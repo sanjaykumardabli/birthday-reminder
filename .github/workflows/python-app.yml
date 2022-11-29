@@ -23,12 +23,16 @@ jobs:
       id: last_status
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Failing step
+      id: demo
+      run: exit 1
 
     - name: Check status success
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
       id: slack_notification_rebuild1
 
-    env:
+      env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
       continue-on-error: true
