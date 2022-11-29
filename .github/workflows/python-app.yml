@@ -77,6 +77,10 @@ jobs:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
         SLACK_MESSAGE: $SLACK_MESSAGE
       continue-on-error: true
+    
+    - name: Send slack message 2
+      echo ${{ job.status }}
+      continue-on-error: true
 
     - name: Send slack message
       id: check
@@ -97,7 +101,7 @@ jobs:
       if:
         contains('
           refs/heads/main
-        ', github.ref) && ${{ job.status }} == 'success'
+        ', github.ref) && ${{ job.status }} == 'failure'
 
       env:
         SLACK_WEBHOOK: https://hooks.slack.com/services/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
