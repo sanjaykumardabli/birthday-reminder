@@ -104,7 +104,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: test
-        run: ${{ needs.deploy.outputs.deploy-status == 'failure' }}
+        run: ${{ needs.deploy.outputs.deploy-status == 'success' }}
 
       - name: Print current workflow status
         run: echo ${{ job.status }}
