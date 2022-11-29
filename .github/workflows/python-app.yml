@@ -92,7 +92,6 @@ jobs:
         SLACK_MESSAGE: $SLACK_MESSAGE
 
     - name: Send slack message 1
-      id: check
       uses: gdcorp-action-public-forks/action-slack-notifY@v2
       continue-on-error: true
       if:
