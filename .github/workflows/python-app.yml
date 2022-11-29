@@ -80,6 +80,7 @@ jobs:
       continue-on-error: true
 
     - name: check last status
+      if: ${{ steps.slack_notification.outcome == 'success' }}
       run: echo ${{ steps.slack_notification.outcome }}
       
     
